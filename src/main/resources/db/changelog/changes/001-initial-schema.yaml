@@ -1,0 +1,46 @@
+databaseChangeLog:
+- changeSet:
+    id: 1766089971295-1
+    author: e-g-i-t-h (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: AdminsPK
+            name: id
+            type: UUID
+        - column:
+            name: email
+            type: VARCHAR(255)
+        - column:
+            name: name
+            type: VARCHAR(255)
+        - column:
+            name: password
+            type: VARCHAR(255)
+        - column:
+            name: role
+            type: VARCHAR(255)
+        tableName: Admins
+- changeSet:
+    id: 1766089971295-2
+    author: e-g-i-t-h (generated)
+    changes:
+    - dropView:
+        viewName: geography_columns
+- changeSet:
+    id: 1766089971295-3
+    author: e-g-i-t-h (generated)
+    changes:
+    - dropView:
+        viewName: geometry_columns
+- changeSet:
+    id: 1766089971295-4
+    author: e-g-i-t-h (generated)
+    changes:
+    - dropTable:
+        tableName: spatial_ref_sys
+
