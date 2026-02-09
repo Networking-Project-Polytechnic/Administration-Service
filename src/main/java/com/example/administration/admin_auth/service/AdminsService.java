@@ -1,5 +1,6 @@
 package com.example.administration.admin_auth.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.core.userdetails.User;
@@ -9,10 +10,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.administration.admin_auth.agency_details.Status;
 import com.example.administration.admin_auth.dto.AdminRequestDTO;
 import com.example.administration.admin_auth.dto.AdminRequestDTOMapper;
+import com.example.administration.admin_auth.event.KafkaProducerService;
 import com.example.administration.admin_auth.model.Admins;
+import com.example.administration.admin_auth.model.Agency;
 import com.example.administration.admin_auth.repository.AdminsRepository;
+import com.example.administration.admin_auth.repository.AgencyRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,8 +25,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminsService implements UserDetailsService{
     private final AdminsRepository adminsRepository;
+    private final AgencyRepository agencyRepository;
     private final PasswordEncoder passwordEncoder;
     private final AdminRequestDTOMapper adminRequestDTOMapper;
+    private final KafkaProducerService kafkaProducerService;
 
     @Override
     public UserDetails loadUserByUsername(String name) {
@@ -51,5 +58,24 @@ public class AdminsService implements UserDetailsService{
         admin.setPassword(passwordEncoder.encode(adminDTO.getPassword()));
         
         return adminsRepository.save(admin);
+    }
+
+    public List<Agency> getAllAgencies() {
+        return agencyRepository.findAllAgencies();
+    }
+
+    public List<Agency> getAgenciesByStatus(Status status) {
+        return agencyRepository.findByStatus(status);
+    }
+
+    public Optional<Agency> updateAgencyStatus(String userName, Status newStatus) {
+        Optional<Agency> agencyOpt = agencyRepository.findByUsername(userName);
+        if (agencyOpt.isPresent()) {
+            Agency agency = agencyOpt.get();
+            agency.setStatus(newStatus);
+            kafkaProducerService.sendAgencyStatusUpdateEvent("Agency-status-update", agency);
+            return Optional.of(agencyRepository.save(agency));
+        }
+        return Optional.empty();
     }
 }

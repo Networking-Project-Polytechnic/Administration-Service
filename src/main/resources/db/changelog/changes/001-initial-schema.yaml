@@ -1,46 +1,75 @@
 databaseChangeLog:
-- changeSet:
-    id: 1766089971295-1
-    author: e-g-i-t-h (generated)
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: AdminsPK
-            name: id
-            type: UUID
-        - column:
-            name: email
-            type: VARCHAR(255)
-        - column:
-            name: name
-            type: VARCHAR(255)
-        - column:
-            name: password
-            type: VARCHAR(255)
-        - column:
-            name: role
-            type: VARCHAR(255)
-        tableName: Admins
-- changeSet:
-    id: 1766089971295-2
-    author: e-g-i-t-h (generated)
-    changes:
-    - dropView:
-        viewName: geography_columns
-- changeSet:
-    id: 1766089971295-3
-    author: e-g-i-t-h (generated)
-    changes:
-    - dropView:
-        viewName: geometry_columns
-- changeSet:
-    id: 1766089971295-4
-    author: e-g-i-t-h (generated)
-    changes:
-    - dropTable:
-        tableName: spatial_ref_sys
+  - changeSet:
+      id: 1-create-admins-table
+      author: antigravity
+      changes:
+        - createTable:
+            tableName: admins
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+              - column:
+                  name: email
+                  type: varchar(255)
+              - column:
+                  name: password
+                  type: varchar(255)
+              - column:
+                  name: role
+                  type: varchar(255)
+                  defaultValue: ADMIN
+  - changeSet:
+      id: 2-create-agency-table
+      author: antigravity
+      changes:
+        - createTable:
+            tableName: agency
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_name
+                  type: varchar(255)
+              - column:
+                  name: email
+                  type: varchar(255)
+              - column:
+                  name: first_name
+                  type: varchar(255)
+              - column:
+                  name: last_name
+                  type: varchar(255)
+              - column:
+                  name: phone_number
+                  type: bigint
+              - column:
+                  name: address
+                  type: varchar(255)
+              - column:
+                  name: license_number
+                  type: varchar(255)
+              - column:
+                  name: profile_url
+                  type: varchar(255)
+              - column:
+                  name: role
+                  type: varchar(255)
+                  defaultValue: ROLE_AGENCY
+              - column:
+                  name: bio
+                  type: text
+              - column:
+                  name: status
+                  type: varchar(50)
 
