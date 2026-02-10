@@ -3,6 +3,9 @@ package com.example.administration.admin_auth.dto;
 import com.example.administration.admin_auth.agency_details.Status;
 import com.example.administration.admin_auth.model.Agency;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class AgencyRequestDTOMapper {
 
     public Agency toEntity(AgencyRequestDTO dto) {

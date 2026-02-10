@@ -61,7 +61,7 @@ public class AdminsService implements UserDetailsService{
     }
 
     public List<Agency> getAllAgencies() {
-        return agencyRepository.findAllAgencies();
+        return agencyRepository.findAll();
     }
 
     public List<Agency> getAgenciesByStatus(Status status) {
@@ -69,7 +69,7 @@ public class AdminsService implements UserDetailsService{
     }
 
     public Optional<Agency> updateAgencyStatus(String userName, Status newStatus) {
-        Optional<Agency> agencyOpt = agencyRepository.findByUsername(userName);
+        Optional<Agency> agencyOpt = agencyRepository.findByUserName(userName);
         if (agencyOpt.isPresent()) {
             Agency agency = agencyOpt.get();
             agency.setStatus(newStatus);
