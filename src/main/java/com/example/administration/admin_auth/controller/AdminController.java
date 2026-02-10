@@ -43,7 +43,7 @@ public class AdminController {
     private final AdminsService adminsService;
 
     @GetMapping("/profile")
-    public ResponseEntity<Users> getUserProfile(Principal principal) {
+    public ResponseEntity<Admins> getUserProfile(Principal principal) {
         String username = principal.getName();
         return usersService.loadUserByUsername(username)
                 .map(ResponseEntity::ok)
