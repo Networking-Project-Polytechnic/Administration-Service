@@ -12,8 +12,8 @@ import com.example.administration.admin_auth.model.Agency;
 
 @Repository
 public interface AgencyRepository extends JpaRepository<Agency, UUID>{
-    Optional<Agency> findByUsername(String userName);
+    Optional<Agency> findByUserName(String userName);
     Optional<Agency> findByEmail(String email);
-    List<Agency> findAllAgencies();
+
     List<Agency> findByStatus(Status status);
 }
