@@ -42,7 +42,13 @@ public class AdminController {
     private final JwtTokenProvider tokenProvider;
     private final AdminsService adminsService;
 
-
+    @GetMapping("/profile")
+    public ResponseEntity<Users> getUserProfile(Principal principal) {
+        String username = principal.getName();
+        return usersService.loadUserByUsername(username)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
     @PostMapping("/login")
     public ResponseEntity<?> authenticateAdmin(@RequestBody LoginRequest loginRequest ){
         Authentication authentication = authenticationManager.authenticate(
