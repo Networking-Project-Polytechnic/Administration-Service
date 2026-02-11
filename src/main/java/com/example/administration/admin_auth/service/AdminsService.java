@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.administration.admin_auth.agency_details.Status;
+import com.example.administration.admin_auth.dto.AdminProfileDTO;
 import com.example.administration.admin_auth.dto.AdminRequestDTO;
 import com.example.administration.admin_auth.dto.AdminRequestDTOMapper;
 import com.example.administration.admin_auth.event.KafkaProducerService;
@@ -32,6 +33,7 @@ public class AdminsService implements UserDetailsService{
 
     @Override
     public UserDetails loadUserByUsername(String name) {
+
 
         Optional<Admins> user =  adminsRepository.findByName(name);
         if(user.isPresent()){
@@ -58,6 +60,18 @@ public class AdminsService implements UserDetailsService{
         admin.setPassword(passwordEncoder.encode(adminDTO.getPassword()));
         
         return adminsRepository.save(admin);
+    }
+
+    public AdminProfileDTO getAdminProfile(String name) {
+        Admins admin = adminsRepository.findByName(name)
+                .orElseThrow(() -> new UsernameNotFoundException("Admin not found with name: " + name));
+        
+        return AdminProfileDTO.builder()
+                .id(admin.getId())
+                .name(admin.getName())
+                .email(admin.getEmail())
+                .role(admin.getRole())
+                .build();
     }
 
     public List<Agency> getAllAgencies() {

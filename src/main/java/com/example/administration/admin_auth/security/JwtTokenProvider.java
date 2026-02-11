@@ -12,6 +12,7 @@ import com.example.administration.admin_auth.model.Admins;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
+
 @Component
 public class JwtTokenProvider {
 
@@ -38,5 +39,26 @@ public class JwtTokenProvider {
                 // Use the non-deprecated signWith(Key key) method
                 .signWith(getSigningKey()) 
                 .compact();
+    }
+
+    public String getUsernameFromToken(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 }
