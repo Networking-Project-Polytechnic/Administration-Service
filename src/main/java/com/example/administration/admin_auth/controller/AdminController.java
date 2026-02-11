@@ -1,8 +1,8 @@
 package com.example.administration.admin_auth.controller;
 
-
 import java.util.List;
 import java.util.Optional;
+import java.security.Principal;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +10,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,11 +31,6 @@ import com.example.administration.admin_auth.security.JwtTokenProvider;
 import com.example.administration.admin_auth.service.AdminsService;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-
-
-
 
 @RestController
 @RequiredArgsConstructor
@@ -65,7 +63,7 @@ public class AdminController {
         String jwt = tokenProvider.generateToken(authentication);
         
         // Extract the role to send back to the frontend
-        Admins userDetails = (Admins) authentication.getPrincipal();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String userRole = userDetails.getAuthorities().iterator().next().getAuthority();
 
         // Return the token and role in the response body
@@ -118,4 +116,3 @@ public class AdminController {
     }
 
 }
-

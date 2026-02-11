@@ -14,38 +14,35 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
 
-// You need to create this filter class yourself. 
-// It will intercept requests and validate the JWT token from the Authorization header.
-// private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true) // Enables @PreAuthorize on controller methods
-@RequiredArgsConstructor // Automatically injects final fields (usersService and jwtAuthenticationFilter if you add it)
+@EnableMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Qualifier("customUserDetailsService")
+    @Qualifier("adminsService") 
     private final UserDetailsService userDetailsService;
-    // private final JwtAuthenticationFilter jwtAuthenticationFilter; // Uncomment this line and create the filter class
-
-    @Bean
-    public PasswordEncoder passwordEncoder() { 
-        return new BCryptPasswordEncoder(); 
-    }
+    
+    // Injected from ApplicationConfig prevents circular dependency
+    private final PasswordEncoder passwordEncoder; 
+    
+    // JWT Filter injection
+    private final JwtAuthenticationFilter jwtAuthenticationFilter; 
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService); 
-        authProvider.setPasswordEncoder(passwordEncoder()); 
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService); 
+        authProvider.setPasswordEncoder(passwordEncoder); 
         return authProvider;
     }
 
@@ -59,24 +56,21 @@ public class SecurityConfig {
         
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless JWT APIs
-                .formLogin(form -> form.disable()) // Disable default form login
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Use JWTs, no sessions
+                .csrf(csrf -> csrf.disable()) 
+                .formLogin(form -> form.disable()) 
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) 
 
                 .authorizeHttpRequests(auth -> {
-                    // Public Endpoints (accessible without a token)
-                    auth.requestMatchers("/api/v1/admins/login", 
-                                         "/api/v1/admins/register").permitAll()
-                        // All other endpoints require a valid token (authentication)
+                    auth.requestMatchers("/api/v1/admins/login", "/api/v1/admins/register").permitAll()
                         .anyRequest().authenticated();
                 })
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) 
                 .build();
     }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Configure which frontend origins are allowed to access your API
         configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://frontend-travyotei.vercel.app")); 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
