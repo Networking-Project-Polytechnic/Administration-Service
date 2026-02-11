@@ -36,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("api/v1/admins")
 public class AdminController {
+    // updated by agent to force rebuild
     
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
