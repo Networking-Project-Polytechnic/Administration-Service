@@ -21,6 +21,7 @@ import com.example.administration.admin_auth.agency_details.Status;
 import com.example.administration.admin_auth.dto.AdminRequestDTO;
 import com.example.administration.admin_auth.dto.JwtAuthenticationResponse;
 import com.example.administration.admin_auth.dto.LoginRequest;
+import com.example.administration.admin_auth.dto.AdminProfileDTO;
 import com.example.administration.admin_auth.model.Admins;
 import com.example.administration.admin_auth.model.Agency;
 import com.example.administration.admin_auth.security.JwtTokenProvider;
@@ -104,6 +105,17 @@ public class AdminController {
     }
 
     
+    @GetMapping("/profile")
+    public ResponseEntity<AdminProfileDTO> getProfile() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String username = authentication.getName();
+        AdminProfileDTO profile = adminsService.getAdminProfile(username);
+        return ResponseEntity.ok(profile);
+    }
 
 }
 
